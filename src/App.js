@@ -1,25 +1,45 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import { Header } from "./Header";
+import { Search } from "./Search";
+import { GithubProfile } from "./GithubProfile";
 
+/**
+ * React app
+ * @augments {Component<null, { user: string}>}
+ */
 class App extends Component {
+  state = {
+    user: null
+  };
+
+  componentDidMount() {
+    const matches =
+      window.location.search && window.location.search.match(/user=(\w+)/);
+
+    if (matches) {
+      this.setState({
+        user: matches[1]
+      });
+    }
+  }
+  /**
+   * @param {IGithubUser} user
+   */
+  onSearch = user => {
+    console.log(user);
+    window.history.replaceState(null, user.login, `?user=${user.login}`);
+  };
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Header logo={logo} text="Welcome to CRA" />
+        <Search
+          query={this.state.user}
+          onSearch={this.onSearch}
+          render={user => <GithubProfile {...user} />}
+        />
       </div>
     );
   }
